@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <style>
+        .contaner_images,.container {
+            display: flex;
+        }
+        .container {
+            justify-content: center;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .contaner_images {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .logo {
+            width: 200px;
+            height: 200px;
+            padding: 10px;
+        }
+        .border {
+            border: 2px dotted green;
+            border-radius: 20px;
+            margin: 30px;
+        }
+
+        button {
+            width: 100px;
+            height: 40px;
+            margin: auto;
+            border: 2px dotted blue;
+            border-radius: 5px;
+            outline: none;
+            background: rgba(0, 81, 255, 0.521);
+            transition: all 1s;
+        }
+        button:hover {
+            background: rgba(0, 81, 255, 0.993);
+            
+        }
+    </style>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div id="app" class="container">
+        <div class="contaner_images" > 
+            <div class="border" v-for="image in arrayImage" @click="show($event)">
+                <img class="logo hook" :class="animationClass" :src="image" >
+            </div>  
+            <div class="border" v-for="image in arrayImageRepeat" @click="show($event)">
+                <img class="logo hook" :class="animationClass" :src="image" >
+            </div>                
+        </div>
+        <button @click="start($event)">Start</button>
+    </div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                arrayImage:[
+                    "./images/1.svg",
+                    "./images/2.svg",
+                    "./images/3.svg",
+                    "./images/4.svg",
+                    "./images/5.svg",
+                    "./images/6.svg"
+                ],
+                arrayImageRepeat: [],
+                animationClass: "",
+                clickImage: {}
+            },
+            created(){
+                this.arrayImage.forEach(i => this.arrayImageRepeat.push(i));
+                this.sort(this.arrayImage);
+                this.sort(this.arrayImageRepeat);
+            },
+            methods: {
+                sort(arr) { // https://learn.javascript.ru/task/shuffle  
+                    let array = arr.slice();        
+                    for (let i = array.length - 1; i > 0; i--) {
+                        let j = Math.floor(Math.random() * (i + 1));
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                    array.forEach((newElement,index) => {
+                        Vue.set(arr, index, newElement);
+                    });
+                },
+                start(e){
+                    this.animationClass = "flipOutY";
+                    e.target.style.display = "none";
+                },
+                show(e){ 
+                    
+                    if (this.clickImage.src == undefined) {
+                        e.target.firstChild.classList.remove("flipOutY");
+                        e.target.firstChild.classList.add("fadeInUp");
+                        this.clickImage = e.target.firstChild;
+                    }
+                    else {
+                        e.target.firstChild.classList.remove("flipOutY");
+                        e.target.firstChild.classList.add("fadeInUp");
+                        setTimeout(() => {
+                            if (this.clickImage.src != e.target.firstChild.src) {
+                                this.clickImage.classList.add("flipOutY");
+                                e.target.firstChild.classList.add("flipOutY");
+                                this.clickImage.classList.remove("fadeInUp");
+                                e.target.firstChild.classList.remove("fadeInUp");
+                            }
+                            this.clickImage = {};
+                        }, 800);
+                    }
+                 
+                }
+            },
+        });
+    </script>
+</body>
+</html>
